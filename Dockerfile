@@ -22,7 +22,7 @@ RUN apk --no-cache add \
     npm
 
 # Install typescript language server and pyright
-RUN npm i -g typescript typescript-language-server
+RUN npm i -g typescript typescript-language-server@0.4.0
 
 # Download example codebases for TypeScript, Python, and Rust (neovim covers C and lua)
 RUN git clone https://github.com/hrsh7th/slow-lsp-demo && \
@@ -31,4 +31,4 @@ RUN git clone https://github.com/hrsh7th/slow-lsp-demo && \
 
 WORKDIR /slow-lsp-demo
 
-ENTRYPOINT nvim src/index.ts
+ENTRYPOINT nvim src/index.tsx
