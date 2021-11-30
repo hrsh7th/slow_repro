@@ -279,53 +279,22 @@ require('lspconfig').sumneko_lua.setup {
   },
 }
 
+vim.api.nvim_set_keymap('i', '<C-x>', 'v:lua.emulate_type()', { expr = true, noremap = true })
+
+function _G.emulate_type()
+  local keys = { 'd', 'i', 'v', 'i', 'd', 'e', 'r' }
+  local timer = vim.loop.new_timer()
+  timer:start(0, 400, vim.schedule_wrap(function()
+    if #keys == 0 then
+      return timer:stop()
+    end
+    local c = table.remove(keys, 1)
+    vim.api.nvim_feedkeys(c, 'n', true)
+  end))
+  return vim.api.nvim_replace_termcodes('<C-x><C-o>', true, true, true)
+end
+
+
 -- Set completeopt to have a better completion experience
 vim.o.completeopt = 'menuone,noselect'
-
--- luasnip setup
-local luasnip = require 'luasnip'
-
--- nvim-cmp setup
-local cmp = require 'cmp'
-cmp.setup {
-  snippet = {
-    expand = function(args)
-      require('luasnip').lsp_expand(args.body)
-    end,
-  },
-  mapping = {
-    ['<C-p>'] = cmp.mapping.select_prev_item(),
-    ['<C-n>'] = cmp.mapping.select_next_item(),
-    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<C-Space>'] = cmp.mapping.complete(),
-    ['<C-e>'] = cmp.mapping.close(),
-    ['<CR>'] = cmp.mapping.confirm {
-      behavior = cmp.ConfirmBehavior.Replace,
-      select = true,
-    },
-    ['<Tab>'] = function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      elseif luasnip.expand_or_jumpable() then
-        vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<Plug>luasnip-expand-or-jump', true, true, true), '')
-      else
-        fallback()
-      end
-    end,
-    ['<S-Tab>'] = function(fallback)
-      if cmp.visible() then
-        cmp.select_prev_item()
-      elseif luasnip.jumpable(-1) then
-        vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<Plug>luasnip-jump-prev', true, true, true), '')
-      else
-        fallback()
-      end
-    end,
-  },
-  sources = {
-    { name = 'nvim_lsp' },
-    { name = 'luasnip' },
-  },
-}
 ::eof::
